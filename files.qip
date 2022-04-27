@@ -13,6 +13,8 @@ set_global_assignment -name VHDL_FILE rtl/pia6821.vhd
 set_global_assignment -name VHDL_FILE rtl/williams_cvsd_board.vhd
 set_global_assignment -name VHDL_FILE rtl/williams2.vhd
 
+set_global_assignment -name VERILOG_FILE rtl/mc6809/mc6809is.v
+
 set_global_assignment -name QIP_FILE rtl/jt51/hdl/jt51.qip
 
 set_global_assignment -name VHDL_FILE rtl/rom/joust2_bg_sound_bank_a.vhd

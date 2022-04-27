@@ -52,8 +52,6 @@ port(
 	rom_addr     : out std_logic_vector(17 downto 0); -- muxed addresses to external (d)ram
 	rom_do       : in  std_logic_vector( 7 downto 0); -- banked rom a/b/c/d, prog 1/2
 	rom_rd       : out std_logic;
-	gfx_rd       : out std_logic;
-	gfx_do       : in  std_logic_vector(23 downto 0);  -- graph 1/2/3
 	
 	-- MiSTer rom loading
 	dn_addr              : in  std_logic_vector(17 downto 0);
@@ -213,7 +211,6 @@ architecture struct of williams2 is
 
 	signal fg_pixels         : std_logic_vector(23 downto 0);
 	signal fg_pixels_0       : std_logic_vector( 3 downto 0);
-	signal fg_pixels_1       : std_logic_vector( 3 downto 0);
 	signal bg_pixels         : std_logic_vector(23 downto 0);
 	signal bg_pixels_0       : std_logic_vector( 3 downto 0);
 	signal bg_pixels_1       : std_logic_vector( 3 downto 0);
@@ -305,7 +302,7 @@ begin
 			
 		if pixel_cnt = "000" then en_cpu <= '1';       end if;
 		if pixel_cnt = "001" then rom_rd <= '1';       end if;
-		if pixel_cnt = "010" then video_access <= '1'; end if;			
+		if pixel_cnt = "011" then video_access <= '1'; end if;			
 		if pixel_cnt = "100" then graph_access <= '1'; end if;
 	
 		if en_pixel = '1' then 		
@@ -395,7 +392,6 @@ begin
 			else 
 				fg_pixels_0 <= fg_pixels( 3 downto  0);
 			end if;
-			fg_pixels_1 <= fg_pixels_0;
 
 		end if;
 	end if;
@@ -415,7 +411,7 @@ bg_pixels_shifted <=
 --	mux bus addr and pixels data to palette addr
 palette_addr <=
 	addr_bus(10 downto 1) when color_cs = '1' else 
-	fg_color_bank & fg_pixels_1 when fg_pixels_1 /= x"0" else
+	fg_color_bank & fg_pixels_0 when fg_pixels_0 /= x"0" else
 	bg_color_bank(5 downto 0) & bg_pixels_shifted;
 --	bg_color_bank(5 downto 3) & vcnt(7 downto 5) & bg_pixels_shifted;
 	
@@ -430,10 +426,6 @@ video_i <= palette_hi_do(7 downto 4);
 --video_g <= bg_pixels(21) & bg_pixels(21) & "00" when fg_pixels(23 downto 20) = x"0" else fg_pixels(21) & fg_pixels(21) & "00";
 --video_b <= bg_pixels(20) & bg_pixels(20) & "00" when fg_pixels(23 downto 20) = x"0" else fg_pixels(20) & fg_pixels(20) & "00";
 --video_i <= x"F";
-
-
--- read graph 1/2/3 from external (d)ram
-gfx_rd <= graph_access;
 
 ---- 24 bits pixels shift register
 ---- 6 pixels of 4 bits
@@ -458,8 +450,7 @@ begin
 			
 			if graph_access = '1' then
 				flip_bg <= flip_bg_a;
-				-- bg_pixels <= graph1_do & graph2_do & graph3_do;
-				bg_pixels <= gfx_do;  -- graph 1/2/3
+				bg_pixels <= graph1_do & graph2_do & graph3_do;
 			else
 				if flip_bg = '0' then 
 					bg_pixels <= bg_pixels(19 downto 0) & X"0";
@@ -489,8 +480,8 @@ cnt_4ms  <= vcnt(5);
 --cnt_4ms_o <= vcnt(5);
 
 -- pia rom irqs to cpu
-cpu_irq  <= pia_io2_irqa or pia_io2_irqb;
--- cpu_irq <= pia_io1_irqa or pia_io1_irqb or pia_io2_irqa or pia_io2_irqb;
+-- cpu_irq  <= pia_io2_irqa or pia_io2_irqb;
+cpu_irq <= pia_io1_irqa or pia_io1_irqb or pia_io2_irqa or pia_io2_irqb;
 
 -- chip select/we
 we_bus  <= '1' when (cpu_rw_n = '0' or blit_rw_n = '0') and en_pixel = '1' and en_cpu = '1' else '0';
@@ -528,27 +519,25 @@ vram_h0_we  <= '1' when vram_we = '1' and blit_wr_inh_h = '0' and decod_do(7 dow
 vram_h1_we  <= '1' when vram_we = '1' and blit_wr_inh_h = '0' and decod_do(7 downto 6)  = "01" else '0';
 vram_h2_we  <= '1' when vram_we = '1' and blit_wr_inh_h = '0' and decod_do(7 downto 6)  = "10" else '0';
 
--- -- mux banked rom address to external (d)ram OLD method by dar
--- rom_addr <= "00"&addr_bus(14 downto 0) when (page = "010"                ) else -- bank a
--- 			"01"&addr_bus(14 downto 0) when (page = "110"                ) else -- bank b
--- 			"10"&addr_bus(14 downto 0) when (page = "001" or page = "011") else -- bank c
--- 			"11"&addr_bus(14 downto 0) when (page = "100" or page = "101") else -- bank d
--- 			"00"&addr_bus(14 downto 0);                                         -- bank a
+-- mux banked rom address to external (d)ram OLD method by dar
+rom_addr <= "00"&addr_bus(14 downto 0) when (page = "010"                ) else -- bank a
+			"01"&addr_bus(14 downto 0) when (page = "110"                ) else -- bank b
+			"10"&addr_bus(14 downto 0) when (page = "001" or page = "011") else -- bank c
+			"11"&addr_bus(14 downto 0) when (page = "100" or page = "101") else -- bank d
+			"00"&addr_bus(14 downto 0);                                         -- bank a
 
--- mux banked rom / prog 1 / prog 2 and graph rom address to external (d)ram NEW method by dar
--- retreived data loaded with loader 1 and loader 2
-rom_addr <= "000"&addr_bus(14 downto 0) when (page = "010"                ) and (pixel_cnt< 3) and (addr_bus(15)='0') else -- bank a
-			"001"&addr_bus(14 downto 0) when (page = "110"                ) and (pixel_cnt< 3) and (addr_bus(15)='0') else -- bank b
-			"010"&addr_bus(14 downto 0) when (page = "001" or page = "011") and (pixel_cnt< 3) and (addr_bus(15)='0') else -- bank c
-			"011"&addr_bus(14 downto 0) when (page = "100" or page = "101") and (pixel_cnt< 3) and (addr_bus(15)='0') else -- bank d
-			"10010" &addr_bus(12 downto 0) when (pixel_cnt< 3) and (addr_bus(15 downto 12) >= X"E") else -- prog2
-			"100000"&addr_bus(11 downto 0) when (pixel_cnt< 3) and (addr_bus(15 downto 12) >= X"D") else -- prog1
-			"11"&graph_addr&"00"; -- graph 1/2/3
+-- -- mux banked rom / prog 1 / prog 2 and graph rom address to external (d)ram NEW method by dar
+-- -- retreived data loaded with loader 1 and loader 2
+-- rom_addr <= "000"&addr_bus(14 downto 0) when (page = "010"                ) and (pixel_cnt< 3) and (addr_bus(15)='0') else -- bank a
+-- 			"001"&addr_bus(14 downto 0) when (page = "110"                ) and (pixel_cnt< 3) and (addr_bus(15)='0') else -- bank b
+-- 			"010"&addr_bus(14 downto 0) when (page = "001" or page = "011") and (pixel_cnt< 3) and (addr_bus(15)='0') else -- bank c
+-- 			"011"&addr_bus(14 downto 0) when (page = "100" or page = "101") and (pixel_cnt< 3) and (addr_bus(15)='0') else -- bank d
+-- 			"10010" &addr_bus(12 downto 0) when (pixel_cnt< 3) and (addr_bus(15 downto 12) >= X"E") else -- prog2
+-- 			"100000"&addr_bus(11 downto 0) when (pixel_cnt< 3) and (addr_bus(15 downto 12) >= X"D") else -- prog1
+-- 			"11"&graph_addr&"00"; -- graph 1/2/3
 
 -- mux data bus between cpu/blitter/roms/io/vram
 data_bus_high <=
-	-- rom_do                  when addr_bus(15 downto 12) >= X"E" else -- 8K
-	-- rom_do                  when addr_bus(15 downto 12) >= X"D" else -- 4K	
 	rom_prog2_do            when addr_bus(15 downto 12) >= X"E" else -- 8K
 	rom_prog1_do            when addr_bus(15 downto 12) >= X"D" else -- 4K	
 	vcnt(7 downto 0)        when addr_bus(15 downto  4)  = X"CBE" else

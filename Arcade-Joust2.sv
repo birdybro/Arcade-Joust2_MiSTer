@@ -359,10 +359,34 @@ arcade_video #(313,24,1) arcade_video
 	.fx(status[5:3])
 );
 
+wire        [ 7:0] audio_1;
+wire        [ 7:0] audio_2;
+wire        [15:0] speech;
+wire signed [15:0] ym2151_left;
+wire signed [15:0] ym2151_right;
 
-wire [7:0] audio;
-assign AUDIO_L = {audio, 6'd0};
-assign AUDIO_R = AUDIO_L;
+wire [12:0] pwm_accumulator_l;
+wire [12:0] pwm_accumulator_r;
+
+always @(posedge clk_12) begin
+	pwm_accumulator_l <= ({
+		{pwm_accumulator_l[11:0]} +
+		{ym2151_left[15:6]} +
+		{speech[15:6]} +
+		{audio_1, 2'b0} +
+		{audio_2, 2'b0}
+	});
+	pwm_accumulator_r <= ({
+		{pwm_accumulator_r[11:0]} +
+		{ym2151_right[15:6]} +
+		{speech[15:6]} +
+		{audio_1, 2'b0} +
+		{audio_2, 2'b0}
+	});
+end
+
+assign AUDIO_L = pwm_accumulator_l[12];
+assign AUDIO_R = pwm_accumulator_r[12];
 assign AUDIO_S = 0;
 
 williams2 williams2
@@ -383,7 +407,11 @@ williams2 williams2
 	.video_hs(hs),
 	.video_vs(vs),
 
-	.audio_out(audio),
+	.audio_1(audio_1),
+	.audio_2(audio_2),
+	.speech(speech),
+	.ym2151_left(ym2151_left),
+	.ym2151_right(ym2151_right),
 
 	.btn_auto_up(status[10]),
 	.btn_advance(status[11]),

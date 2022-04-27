@@ -528,7 +528,14 @@ vram_h0_we  <= '1' when vram_we = '1' and blit_wr_inh_h = '0' and decod_do(7 dow
 vram_h1_we  <= '1' when vram_we = '1' and blit_wr_inh_h = '0' and decod_do(7 downto 6)  = "01" else '0';
 vram_h2_we  <= '1' when vram_we = '1' and blit_wr_inh_h = '0' and decod_do(7 downto 6)  = "10" else '0';
 
--- mux banked rom / prog 1 / prog 2 and graph rom address to external (d)ram
+-- -- mux banked rom address to external (d)ram OLD method by dar
+-- rom_addr <= "00"&addr_bus(14 downto 0) when (page = "010"                ) else -- bank a
+-- 			"01"&addr_bus(14 downto 0) when (page = "110"                ) else -- bank b
+-- 			"10"&addr_bus(14 downto 0) when (page = "001" or page = "011") else -- bank c
+-- 			"11"&addr_bus(14 downto 0) when (page = "100" or page = "101") else -- bank d
+-- 			"00"&addr_bus(14 downto 0);                                         -- bank a
+
+-- mux banked rom / prog 1 / prog 2 and graph rom address to external (d)ram NEW method by dar
 -- retreived data loaded with loader 1 and loader 2
 rom_addr <= "000"&addr_bus(14 downto 0) when (page = "010"                ) and (pixel_cnt< 3) and (addr_bus(15)='0') else -- bank a
 			"001"&addr_bus(14 downto 0) when (page = "110"                ) and (pixel_cnt< 3) and (addr_bus(15)='0') else -- bank b
@@ -540,10 +547,10 @@ rom_addr <= "000"&addr_bus(14 downto 0) when (page = "010"                ) and 
 
 -- mux data bus between cpu/blitter/roms/io/vram
 data_bus_high <=
-	rom_do                  when addr_bus(15 downto 12) >= X"E" else -- 8K
-	rom_do                  when addr_bus(15 downto 12) >= X"D" else -- 4K	
---	rom_prog2_do            when addr_bus(15 downto 12) >= X"E" else -- 8K
---	rom_prog1_do            when addr_bus(15 downto 12) >= X"D" else -- 4K	
+	-- rom_do                  when addr_bus(15 downto 12) >= X"E" else -- 8K
+	-- rom_do                  when addr_bus(15 downto 12) >= X"D" else -- 4K	
+	rom_prog2_do            when addr_bus(15 downto 12) >= X"E" else -- 8K
+	rom_prog1_do            when addr_bus(15 downto 12) >= X"D" else -- 4K	
 	vcnt(7 downto 0)        when addr_bus(15 downto  4)  = X"CBE" else
 	map_do                  when addr_bus(15 downto 11)  = X"C"&'0' else
 	x"0"&cmos_do            when addr_bus(15 downto 10)  = X"C"&"11" else

@@ -1271,7 +1271,6 @@ end if;
 end process;
 
 -- sound board - IC4-7-8-27
--- MRA loading for sound in joust2_sound_board.vhd
 joust2_sound_board : entity work.joust2_sound_board
 port map(
 	clock_12     => clock_12,

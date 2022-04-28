@@ -365,25 +365,8 @@ wire        [15:0] speech;
 wire signed [15:0] ym2151_left;
 wire signed [15:0] ym2151_right;
 
-wire [12:0] pwm_accumulator_l;
-wire [12:0] pwm_accumulator_r;
-
-always @(posedge clk_12) begin
-	pwm_accumulator_l <= ({
-		{pwm_accumulator_l[11:0]} +
-		{ym2151_left[15:6]} +
-		{speech[15:6]} +
-		{audio_1, 2'b0} +
-		{audio_2, 2'b0}
-	});
-	pwm_accumulator_r <= ({
-		{pwm_accumulator_r[11:0]} +
-		{ym2151_right[15:6]} +
-		{speech[15:6]} +
-		{audio_1, 2'b0} +
-		{audio_2, 2'b0}
-	});
-end
+wire [12:0] pwm_accumulator_l = ({1'b0,pwm_accumulator_l[11:0]} + {1'b0,ym2151_left[15:6] } + {1'b0,speech[15:6]} + {1'b0,audio_1,2'b0} + {1'b0,audio_2,2'b0});
+wire [12:0] pwm_accumulator_r = ({1'b0,pwm_accumulator_r[11:0]} + {1'b0,ym2151_right[15:6]} + {1'b0,speech[15:6]} + {1'b0,audio_1,2'b0} + {1'b0,audio_2,2'b0});
 
 assign AUDIO_L = pwm_accumulator_l[12];
 assign AUDIO_R = pwm_accumulator_r[12];

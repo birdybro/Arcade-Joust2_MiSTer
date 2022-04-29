@@ -463,7 +463,7 @@ port map(
 	cen => cvsd_clk,
 	rst => '0', -- Reset is not currently implemented
 	bit_in => cvsd_data,
-	sample_out(15 downto 0) => speech
+	sample_out => speech
 );
 
 -- YM2151 : FM Clocks

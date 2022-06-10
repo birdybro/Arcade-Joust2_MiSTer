@@ -163,7 +163,7 @@ port map(
 -- cpu_2764_ic8_rom1_rev1.0f (84517c3c)
 -- soundcpu 32000-33FFF
 rom_sound_cs <= '1' when dn_addr(18 downto 13) = "100011" else '0';
-cpu_prog_rom : work.dpram generic map (8,13)
+cpu_prog_rom : entity work.dpram generic map (8,13)
 port map
 (
 	clk_a  => clock_12,

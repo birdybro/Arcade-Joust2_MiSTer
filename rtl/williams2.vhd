@@ -817,7 +817,7 @@ port map(
 -- );
 
 rom_prog1_cs <= '1' when dn_addr(18 downto 12) = "1001000" else '0';
-prog1_rom : work.dpram generic map (8,12)
+prog1_rom : entity work.dpram generic map (8,12)
 port map
 (
 	clk_a => clock_12,
@@ -838,7 +838,7 @@ port map
 -- );
 
 rom_prog2_cs <= '1' when dn_addr(18 downto 13) = "100010" else '0';
-prog2_rom : work.dpram generic map (8,13)
+prog2_rom : entity work.dpram generic map (8,13)
 port map
 (
 	clk_a => clock_12,
@@ -861,7 +861,7 @@ port map
 -- );
 
 rom_bank_a_cs <= '1' when dn_addr(18 downto 15) = "0011" else '0';
-bank_a_rom : work.dpram generic map (8,15)
+bank_a_rom : entity work.dpram generic map (8,15)
 port map
 (
 	clk_a  => clock_12,
@@ -883,7 +883,7 @@ port map
 -- );
 
 rom_bank_b_cs <= '1' when dn_addr(18 downto 15) = "0100" else '0';
-bank_b_rom : work.dpram generic map (8,15)
+bank_b_rom : entity work.dpram generic map (8,15)
 port map
 (
 	clk_a  => clock_12,
@@ -905,7 +905,7 @@ port map
 -- );
 
 rom_bank_c_cs <= '1' when dn_addr(18 downto 15) = "0101" else '0';
-bank_c_rom : work.dpram generic map (8,15)
+bank_c_rom : entity work.dpram generic map (8,15)
 port map
 (
 	clk_a  => clock_12,
@@ -927,7 +927,7 @@ port map
 -- );
 
 rom_bank_d_cs <= '1' when dn_addr(18 downto 15) = "0110" else '0';
-bank_d_rom : work.dpram generic map (8,15)
+bank_d_rom : entity work.dpram generic map (8,15)
 port map
 (
 	clk_a  => clock_12,
@@ -949,7 +949,7 @@ port map
 -- );
 
 rom_graph1_cs <= '1' when dn_addr(18 downto 14) = "01110" else '0';
-graph1_rom : work.dpram generic map (8,14)
+graph1_rom : entity work.dpram generic map (8,14)
 port map
 (
 	clk_a  => clock_12,
@@ -971,7 +971,7 @@ port map
 -- );
 
 rom_graph2_cs <= '1' when dn_addr(18 downto 14) = "01111" else '0';
-graph2_rom : work.dpram generic map (8,14)
+graph2_rom : entity work.dpram generic map (8,14)
 port map
 (
 	clk_a  => clock_12,
@@ -993,7 +993,7 @@ port map
 -- );
 
 rom_graph3_cs <= '1' when dn_addr(18 downto 14) = "10000" else '0';
-graph3_rom : work.dpram generic map (8,14)
+graph3_rom : entity work.dpram generic map (8,14)
 port map
 (
 	clk_a  => clock_12,
@@ -1136,7 +1136,7 @@ port map(
 --  data => decod_do
 -- );
 rom_decoder_cs <= '1' when dn_addr(18 downto 9) = "1001001000" else '0';
-video_addr_decoder : work.dpram generic map (8,9)
+video_addr_decoder : entity work.dpram generic map (8,9)
 port map
 (
 	clk_a  => clock_12,

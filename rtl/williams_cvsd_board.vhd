@@ -357,7 +357,7 @@ port map (
 -- );
 
 sound_bank_a_cs <= '1' when dn_addr(18 downto 15) = "0000" else '0';
-bank_a_rom : work.dpram generic map (8,15)
+bank_a_rom : entity work.dpram generic map (8,15)
 port map
 (
 	clk_a  => clock_12,
@@ -370,8 +370,6 @@ port map
 	q_b    => rom_bank_a_do
 );
 
-
-
 -- -- rom1 IC_U19
 -- bank_b_rom : entity work.joust2_bg_sound_bank_b
 -- port map(
@@ -381,7 +379,7 @@ port map
 -- );
 
 sound_bank_b_cs <= '1' when dn_addr(18 downto 15) = "0001" else '0';
-bank_b_rom : work.dpram generic map (8,15)
+bank_b_rom : entity work.dpram generic map (8,15)
 port map
 (
 	clk_a  => clock_12,
@@ -403,7 +401,7 @@ port map
 -- );
 
 sound_bank_c_cs <= '1' when dn_addr(18 downto 15) = "0010" else '0';
-bank_c_rom : work.dpram generic map (8,15)
+bank_c_rom : entity work.dpram generic map (8,15)
 port map
 (
 	clk_a  => clock_12,

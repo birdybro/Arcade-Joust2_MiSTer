@@ -348,73 +348,73 @@ port map (
  RegData  => open    -- : out std_logic_vector(111 downto 0);
 );
 
--- -- rom0 IC_U4
--- bank_a_rom : entity work.joust2_bg_sound_bank_a
--- port map(
---  clk  => clock_12,
---  addr => cpu_addr(14 downto 0),
---  data => rom_bank_a_do
--- );
-
-sound_bank_a_cs <= '1' when dn_addr(18 downto 15) = "0000" else '0';
-bank_a_rom : work.dpram generic map (8,15)
-port map
-(
-	clk_a  => clock_12,
-	we_a   => dn_wr and sound_bank_a_cs,
-	addr_a => dn_addr(14 downto 0),
-	d_a    => dn_data,
-
-	clk_b  => clock_12,
-	addr_b => cpu_addr(14 downto 0),
-	q_b    => rom_bank_a_do
+-- rom0 IC_U4
+bank_a_rom : entity work.joust2_bg_sound_bank_a
+port map(
+ clk  => clock_12,
+ addr => cpu_addr(14 downto 0),
+ data => rom_bank_a_do
 );
 
+-- sound_bank_a_cs <= '1' when dn_addr(18 downto 15) = "0000" else '0';
+-- bank_a_rom : work.dpram generic map (8,15)
+-- port map
+-- (
+-- 	clk_a  => clock_12,
+-- 	we_a   => dn_wr and sound_bank_a_cs,
+-- 	addr_a => dn_addr(14 downto 0),
+-- 	d_a    => dn_data,
 
-
--- -- rom1 IC_U19
--- bank_b_rom : entity work.joust2_bg_sound_bank_b
--- port map(
---  clk  => clock_12,
---  addr => cpu_addr(14 downto 0),
---  data => rom_bank_b_do
+-- 	clk_b  => clock_12,
+-- 	addr_b => cpu_addr(14 downto 0),
+-- 	q_b    => rom_bank_a_do
 -- );
 
-sound_bank_b_cs <= '1' when dn_addr(18 downto 15) = "0001" else '0';
-bank_b_rom : work.dpram generic map (8,15)
-port map
-(
-	clk_a  => clock_12,
-	we_a   => dn_wr and sound_bank_b_cs,
-	addr_a => dn_addr(14 downto 0),
-	d_a    => dn_data,
 
-	clk_b  => clock_12,
-	addr_b => cpu_addr(14 downto 0),
-	q_b    => rom_bank_b_do
+
+-- rom1 IC_U19
+bank_b_rom : entity work.joust2_bg_sound_bank_b
+port map(
+ clk  => clock_12,
+ addr => cpu_addr(14 downto 0),
+ data => rom_bank_b_do
 );
 
--- -- rom2 IC_U20
--- bank_c_rom : entity work.joust2_bg_sound_bank_c
--- port map(
---  clk  => clock_12,
---  addr => cpu_addr(14 downto 0),
---  data => rom_bank_c_do
+-- sound_bank_b_cs <= '1' when dn_addr(18 downto 15) = "0001" else '0';
+-- bank_b_rom : work.dpram generic map (8,15)
+-- port map
+-- (
+-- 	clk_a  => clock_12,
+-- 	we_a   => dn_wr and sound_bank_b_cs,
+-- 	addr_a => dn_addr(14 downto 0),
+-- 	d_a    => dn_data,
+
+-- 	clk_b  => clock_12,
+-- 	addr_b => cpu_addr(14 downto 0),
+-- 	q_b    => rom_bank_b_do
 -- );
 
-sound_bank_c_cs <= '1' when dn_addr(18 downto 15) = "0010" else '0';
-bank_c_rom : work.dpram generic map (8,15)
-port map
-(
-	clk_a  => clock_12,
-	we_a   => dn_wr and sound_bank_c_cs,
-	addr_a => dn_addr(14 downto 0),
-	d_a    => dn_data,
-
-	clk_b  => clock_12,
-	addr_b => cpu_addr(14 downto 0),
-	q_b    => rom_bank_c_do
+-- rom2 IC_U20
+bank_c_rom : entity work.joust2_bg_sound_bank_c
+port map(
+ clk  => clock_12,
+ addr => cpu_addr(14 downto 0),
+ data => rom_bank_c_do
 );
+
+-- sound_bank_c_cs <= '1' when dn_addr(18 downto 15) = "0010" else '0';
+-- bank_c_rom : work.dpram generic map (8,15)
+-- port map
+-- (
+-- 	clk_a  => clock_12,
+-- 	we_a   => dn_wr and sound_bank_c_cs,
+-- 	addr_a => dn_addr(14 downto 0),
+-- 	d_a    => dn_data,
+
+-- 	clk_b  => clock_12,
+-- 	addr_b => cpu_addr(14 downto 0),
+-- 	q_b    => rom_bank_c_do
+-- );
 
 -- sram IC U3
 sram : entity work.gen_ram
